@@ -1,0 +1,2 @@
+run = 'npm run dev'
+entrypoint = 'pages/index.jsx'
