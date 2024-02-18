@@ -111,7 +111,15 @@ export default function Home() {
         console.log("fetching memos from the blockchain..");
         const memos = await buyMeACoffee.getMemos();
         console.log("fetched!");
-        setMemos(memos);
+        const memosTemp = memos.map((memo) => {
+          return {
+            address: memo.from,
+            timestamp: new Date(memo.timestamp * 1000),
+            message: memo.message,
+            name: memo.name
+          }
+        });
+        setMemos(memosTemp);
       } else {
         console.log("Metamask is not connected");
       }
@@ -129,15 +137,17 @@ export default function Home() {
     // Create an event handler function for when someone sends
     // us a new memo.
     const onNewMemo = (from, timestamp, name, message) => {
+      console.log("onNewMemo is called")
       console.log("Memo received: ", from, timestamp, name, message);
+      const newMemo = {
+        address: from,
+        timestamp: new Date(timestamp * 1000),
+        message: message,
+        name: name
+      }
       setMemos((prevState) => [
         ...prevState,
-        {
-          address: from,
-          timestamp: new Date(timestamp * 1000),
-          message,
-          name
-        }
+        newMemo
       ]);
     };
 
@@ -179,7 +189,7 @@ export default function Home() {
         {currentAccount ? (
           <div>
             <form>
-              <div class="formgroup">
+              <div className="formgroup">
                 <label>
                   Name
                 </label>
@@ -193,7 +203,7 @@ export default function Home() {
                   />
               </div>
               <br/>
-              <div class="formgroup">
+              <div className="formgroup">
                 <label>
                   Send Albert a message
                 </label>
@@ -227,9 +237,9 @@ export default function Home() {
 
       {currentAccount && (memos.map((memo, idx) => {
         return (
-          <div key={idx} style={{border:"2px solid", "border-radius":"5px", padding: "5px", margin: "5px"}}>
-            <p style={{"font-weight":"bold"}}>"{memo.message}"</p>
-            <p>From: {memo.name} at {memo.timestamp.toString()}</p>
+          <div key={idx} style={{border:"2px solid", borderRadius:"5px", padding: "5px", margin: "5px", width: '60%'}}>
+            <p style={{fontWeight:"bold"}}>"{memo.message}"</p>
+            <p>From: <b style={{color: 'grey'}}>{memo.name}</b> at {memo.timestamp.toString()}</p>
           </div>
         )
       }))}
